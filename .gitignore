@@ -1,3 +1,7 @@
+capone/migrations/*
+capone/tests/migrations/*
+
+
 *.py[co]
 .project
 .pydevproject
