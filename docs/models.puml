@@ -1,0 +1,76 @@
+@startuml Models
+
+class TransactionRelatedObject {
+    - transaction : ForeignKey
+    - related_object_content_type : ForeignKey
+    - related_object_id : PositiveIntegerField
+    - related_object : GenericForeignKey
+    - created_at : DateTimeField
+    - modified_at : DateTimeField
+}
+
+class TransactionType {
+    - name : CharField
+    - description : TextField
+    - created_at : DateTimeField
+    - modified_at : DateTimeField
+}
+
+class Transaction {
+    - ledgers : ManyToManyField
+    - transaction_id : UUIDField
+    - voids : OneToOneField
+    - notes : TextField
+    - created_by : ForeignKey
+    - posted_timestamp : DateTimeField
+    - created_at : DateTimeField
+    - modified_at : DateTimeField
+    - type : ForeignKey
+    - clean()
+    - validate()
+    - save()
+    - summary()
+}
+
+class Ledger {
+    - name : CharField
+    - number : PositiveIntegerField
+    - description : TextField
+    - increased_by_debits : BooleanField
+    - created_at : DateTimeField
+    - modified_at : DateTimeField
+    - get_balance()
+}
+
+class LedgerEntry {
+    - ledger : ForeignKey
+    - transaction : ForeignKey
+    - entry_id : UUIDField
+    - amount : DecimalField
+    - created_at : DateTimeField
+    - modified_at : DateTimeField
+}
+
+class LedgerBalance {
+    - ledger : ForeignKey
+    - related_object_content_type : ForeignKey
+    - related_object_id : PositiveIntegerField
+    - related_object : GenericForeignKey
+    - balance : DecimalField
+    - created_at : DateTimeField
+    - modified_at : DateTimeField
+}
+
+TransactionRelatedObject "*" -- "1" Transaction : transaction
+
+Transaction "1" -- "1" Transaction : voids
+Transaction "*" -- "1" TransactionType : type
+Transaction "*" -- "1" settings.AUTH_USER_MODEL : created_by
+Transaction "1" -- "1" TransactionQuerySet : objects
+
+LedgerEntry "*" -- "1" Ledger : LedgerEntry.ledger
+LedgerEntry "*" -- "1" Transaction : LedgerEntry.transaction
+
+LedgerBalance "*" -- "1" Ledger : ledger
+
+@enduml

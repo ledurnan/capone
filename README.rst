@@ -107,6 +107,10 @@ Note that all objects in this library have ``created_at`` and
 ``modified_at`` fields that are ``auto_now_add`` and ``auto_now``,
 respectively.
 
+Class (Model) Diagram
+~~~~~~~~~~~~~~~~~~~~~
+|Capone Class Diagram|
+
 Accounting Models
 ~~~~~~~~~~~~~~~~~
 
@@ -581,7 +585,61 @@ other fields on Ledger provided to the method.
    >>> create_transaction(user, evidence=[order], ledger_entries=[LedgerEntry(amount=debit(Decimal(100)), ledger=ar), LedgerEntry(amount=credit(Decimal(100)), ledger=revenue)])
    <Transaction: Transaction b3e73f1d-6b10-4597-b19b-84800839d5b3>
    >>> with assert_raises(Transaction.DoesNotExist):
-   ...     assert_transaction_in_ledgers_for_amounts_with_evidence(ledger_amount_pairs=[(revenue.name, credit(Decimal(100))), (ar.name, debit(Decimal(100)))], evidence=[])
+   .class LedgerBalance(models.Model):
+    """
+    A Denormalized balance for a related object in a ledger.
+
+    The denormalized values on this model make querying for related objects
+    that have a specific balance in a Ledger more efficient.  Creating and
+    updating this model is taken care of automatically by `capone`.  See the
+    README for a further explanation and demonstration of using the query API
+    that uses this model.
+    """
+    class Meta:
+        unique_together = (
+            ('ledger', 'related_object_content_type', 'related_object_id'),
+        )
+
+    ledger = models.ForeignKey(
+        'Ledger',
+        on_delete=models.deletion.CASCADE)
+
+    related_object_content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.deletion.CASCADE)
+    related_object_id = models.PositiveIntegerField(
+        db_index=True)
+    related_object = GenericForeignKey(
+        'related_object_content_type',
+        'related_object_id')
+
+    balance = models.DecimalField(
+        default=Decimal(0),
+        max_digits=24,
+        decimal_places=4)
+
+    created_at = models.DateTimeField(
+        auto_now_add=True)
+    modified_at = models.DateTimeField(
+        auto_now=True)
+
+    def __str__(self):
+        return "LedgerBalance: %s for %s in %s" % (
+            self.balance,
+            self.related_object,
+            self.ledger,
+        )
+
+
+def LedgerBalances():
+    """
+    Make a relation from an evidence model to its LedgerBalance entries.
+    """
+    return GenericRelation(
+        'capone.LedgerBalance',
+        content_type_field='related_object_content_type',
+        object_id_field='related_object_id',
+    )..     assert_transaction_in_ledgers_for_amounts_with_evidence(ledger_amount_pairs=[(revenue.name, credit(Decimal(100))), (ar.name, debit(Decimal(100)))], evidence=[])
    ...
    >>> assert_transaction_in_ledgers_for_amounts_with_evidence(ledger_amount_pairs=[(revenue.name, credit(Decimal(100))), (ar.name, debit(Decimal(100)))], evidence=[order])
    >>> with assert_raises(Transaction.DoesNotExist):
@@ -609,4 +667,6 @@ public record that was not created by an agency which state law has
 allowed to claim copyright and is therefore in the public domain in the
 United States.
 
-.. |Al Capone's Miami Mugshot| image:: Al_Capone_in_Florida.jpg
+.. |Al Capone's Miami Mugshot| image:: docs/Al_Capone_in_Florida.jpg
+
+.. |Capone Class Diagram| image:: docs/models_uml.svg
