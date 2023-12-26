@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from functools import partial
 
 from django.conf import settings
@@ -131,7 +131,7 @@ def create_transaction(
     )
 
     if not posted_timestamp:
-        posted_timestamp = datetime.now(timezone.utc)
+        posted_timestamp = datetime.now()
 
     validate_transaction(
         user,
