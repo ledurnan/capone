@@ -1,6 +1,7 @@
 from datetime import datetime
-from datetime import timezone
+from django.utils import timezone
 from datetime import timedelta
+from django.conf import settings
 from decimal import Decimal
 
 from django.test import TestCase
@@ -23,8 +24,14 @@ class TestAssertTransactionInLedgersForAmountsWithEvidence(TestCase):
         """
         Test filtering by `posted_timestamp`, `notes`, `type`, and `user`.
         """
-        time = datetime.now(timezone.utc)
-        wrong_time = datetime.now(timezone.utc) - timedelta(days=1)
+        if settings.USE_TZ:
+            time = timezone.now()
+            wrong_time = timezone.now() - timedelta(days=1)
+        else:
+            time = datetime.now()
+            wrong_time = datetime.now() - timedelta(days=1)
+
+
         user1 = UserFactory()
         user2 = UserFactory()
         credit_card_transaction = CreditCardTransactionFactory()
