@@ -1,4 +1,5 @@
 # Requirements needed for the setup make target and the test target
 # outside of the individual tox environments.
 
-tox==3.14.6
+tox>=3.14.6,<4  # Allow more recent versions of tox
+

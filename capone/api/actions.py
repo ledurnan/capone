@@ -181,4 +181,5 @@ def create_transaction(
     ]
     TransactionRelatedObject.objects.bulk_create(transaction_related_objects)
 
+    transaction.validate() # Now that we have a pk, we can validate.
     return transaction

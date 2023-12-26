@@ -20,7 +20,8 @@ VENDOR_SENTINEL:=.sentinel
 venv: $(VENV_ACTIVATE)
 
 $(VENV_ACTIVATE): requirements*.txt
-	test -f $@ || virtualenv --python=python3.6 $(VENV_DIR)
+	test -f $@ || python3 -m venv $(VENV_DIR)  # Adjusted to use python3 venv module
+	$(WITH_VENV) pip install -U pip  # Ensure pip is up to date
 	$(WITH_VENV) pip install -r requirements-setup.txt
 	$(WITH_VENV) pip install -e .
 	$(WITH_VENV) pip install -r requirements-dev.txt
@@ -74,7 +75,7 @@ clean:
 	rm -f xunit.xml
 	find . -type f -name '*.pyc' -delete
 	rm -rf coverage .coverage*
-	dropdb --if-exists capone_test_db -U postgres
+	dropdb --if-exists ${PGDATABASE} -U postgres
 
 .PHONY: teardown
 teardown:

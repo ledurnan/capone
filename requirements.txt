@@ -1,3 +1,3 @@
 psycopg2>=2.6.2,<3
-Django>=1.11,<3
-enum34
+Django>=4.2,<6  # Updated to include Django 5, removed unsupported (and insecure) versions
+# Removed enum34, as it is a backport of the Python 3.4 enum module and is unnecessary in Python 3.6+
