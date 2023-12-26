@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils import timezone
 from functools import partial
 
 from django.conf import settings
@@ -131,7 +132,10 @@ def create_transaction(
     )
 
     if not posted_timestamp:
-        posted_timestamp = datetime.now()
+        if settings.USE_TZ:
+            posted_timestamp = timezone.now()
+        else:
+            posted_timestamp = datetime.now()
 
     validate_transaction(
         user,

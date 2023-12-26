@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 from datetime import datetime
+from django.conf import settings
+from django.utils import timezone
 from decimal import Decimal
 
 from django.test import TestCase
@@ -28,7 +30,10 @@ class TransactionBase(TestCase):
     def setUp(self):
         self.user1 = UserFactory()
         self.user2 = UserFactory()
-        self.posted_timestamp = datetime.now()
+        if settings.USE_TZ:
+            self.posted_timestamp = timezone.now()
+        else:
+            self.posted_timestamp = datetime.now()
 
 
 class TestStrMethods(TestCase):
@@ -106,7 +111,10 @@ class TestSettingExplicitTimestampField(TransactionBase):
     def test_setting_explicit_timestamp_field(self):
         transaction = TransactionFactory()
         old_posted_timestamp = transaction.posted_timestamp
-        transaction.posted_timestamp = datetime.now()
+        if settings.USE_TZ:
+            transaction.posted_timestamp = timezone.now()
+        else:
+            transaction.posted_timestamp = datetime.now()
         transaction.save()
         self.assertNotEqual(
             old_posted_timestamp,
