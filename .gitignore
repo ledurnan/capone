@@ -1,6 +1,6 @@
 capone/migrations/*
 capone/tests/migrations/*
-
+.env
 
 *.py[co]
 .project
