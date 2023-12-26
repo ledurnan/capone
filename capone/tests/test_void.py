@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timezone
 from decimal import Decimal as D
 
 from django.test import TestCase
@@ -182,7 +183,7 @@ class TestVoidTimestamps(TestVoidBase):
             LedgerEntry(amount=credit(amount), ledger=self.rev_ledger),
         ])
 
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         void_txn = void_transaction(
             charge_txn, self.creation_user,
             posted_timestamp=now)

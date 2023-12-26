@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timezone
 from datetime import timedelta
 from decimal import Decimal
 
@@ -22,8 +23,8 @@ class TestAssertTransactionInLedgersForAmountsWithEvidence(TestCase):
         """
         Test filtering by `posted_timestamp`, `notes`, `type`, and `user`.
         """
-        time = datetime.now()
-        wrong_time = datetime.now() - timedelta(days=1)
+        time = datetime.now(timezone.utc)
+        wrong_time = datetime.now(timezone.utc) - timedelta(days=1)
         user1 = UserFactory()
         user2 = UserFactory()
         credit_card_transaction = CreditCardTransactionFactory()

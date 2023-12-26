@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from django.test import TestCase
@@ -74,7 +74,7 @@ class TestTransactionFactory(TestCase):
         """
         Test setting fields `posted_timestamp`, `notes`, `type`, and `user`.
         """
-        time = datetime.now()
+        time = datetime.now(timezone.utc)
         FIELDS_TO_VALUES = [
             ('posted_timestamp', time),
             ('notes', 'booga'),
