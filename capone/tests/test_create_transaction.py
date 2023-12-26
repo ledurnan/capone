@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timezone
 from decimal import Decimal as D
 from unittest import mock
 
@@ -153,7 +154,7 @@ class TestCreateTransaction(TestCase):
         )
 
     def test_setting_posted_timestamp(self):
-        POSTED_DATETIME = datetime(2016, 2, 7, 11, 59)
+        POSTED_DATETIME = datetime(2016, 2, 7, 11, 59, tzinfo=timezone.utc)
         order = OrderFactory(amount=self.AMOUNT)
 
         txn_recognize = create_transaction(
