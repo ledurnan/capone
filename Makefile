@@ -42,9 +42,10 @@ endif
 .PHONY: init
 init: $(VENDOR_SENTINEL)-init
 $(VENDOR_SENTINEL)-init:
-	test -z `psql postgres -U postgres -At -c "SELECT 1 FROM pg_roles WHERE rolname='django'" ` && createuser -u postgres -d django || true
-	dropdb --if-exists capone_test_db -U postgres
-	createdb -U django capone_test_db
+	test -z `psql postgres -U postgres -At -c "SELECT 1 FROM pg_roles WHERE rolname='django'" ` && createuser -U postgres -d django || true
+	psql -U postgres -d postgres -c "ALTER USER django WITH PASSWORD '${PGPASSWORD}';"
+	dropdb --if-exists ${PGDATABASE} -U postgres
+	createdb -U django ${PGDATABASE}
 	@touch $@
 
 .PHONY: migrate
